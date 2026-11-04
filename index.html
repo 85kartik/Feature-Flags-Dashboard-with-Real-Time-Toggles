@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Feature Flags Dashboard with Real-Time Toggles - SaaS Admin Panel">
+  <title>FeatureControl — Feature Flags Dashboard</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- App Shell Layout -->
+  <div class="app-layout">
+    
+    <!-- Collapsible Sidebar Navigation -->
+    <aside id="sidebar" class="sidebar" aria-label="Sidebar Navigation">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="logo-icon-wrapper">
+            <i data-lucide="toggle-right" class="logo-icon"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">FeatureControl</span>
+            <span class="brand-badge">SaaS v1.2</span>
+          </div>
+        </div>
+        <button id="closeSidebarBtn" class="sidebar-close-btn" aria-label="Close navigation sidebar">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main Navigation">
+        <div class="nav-section-title">MAIN NAVIGATION</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#dashboard" class="nav-link active" data-nav="dashboard">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#feature-flags" class="nav-link" data-nav="flags">
+              <i data-lucide="sliders-horizontal"></i>
+              <span>Feature Flags</span>
+              <span class="nav-pill" id="navFlagCount">5</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#website-preview" class="nav-link" data-nav="preview">
+              <i data-lucide="monitor"></i>
+              <span>Website Preview</span>
+              <span class="live-dot" title="Live Preview Synchronized"></span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="nav-section-title">SYSTEM & HELP</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#settings" class="nav-link" data-nav="settings" id="openSettingsLink">
+              <i data-lucide="settings"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#about" class="nav-link" data-nav="about" id="openAboutLink">
+              <i data-lucide="info"></i>
+              <span>About Project</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-environment-card">
+          <div class="env-header">
+            <span class="env-status-dot"></span>
+            <span class="env-name">Production Env</span>
+          </div>
+          <p class="env-details">Region: us-east-1 (Latency: 14ms)</p>
+          <div class="env-sync-status">
+            <i data-lucide="database"></i>
+            <span>localStorage Synced</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      
+      <!-- Top Dashboard Header -->
+      <header class="top-header" role="banner">
+        <div class="header-left">
+          <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Open mobile menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="header-titles">
+            <h1 class="page-title">Feature Flags Dashboard</h1>
+            <p class="page-subtitle">Manage and control your website features in real time without deployment delays.</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- System Status Indicator -->
+          <div class="system-status-indicator" title="All real-time feature systems operating normally">
+            <span class="status-pulse-dot"></span>
+            <span class="status-label">System Operational</span>
+          </div>
+
+          <!-- Current Live Date -->
+          <div class="header-date-badge" id="currentDateBadge">
+            <i data-lucide="calendar"></i>
+            <span id="currentDateDisplay">Loading date...</span>
+          </div>
+
+          <!-- Administrator Profile -->
+          <div class="admin-profile">
+            <div class="profile-avatar" title="Administrator Avatar">
+              <span>AD</span>
+              <span class="profile-online-badge"></span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Alex Drake</span>
+              <span class="profile-role">Super Admin</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Dashboard Scrollable Container -->
+      <main class="dashboard-container" role="main">
+        
+        <!-- Dashboard Statistics Cards (4 Cards) -->
+        <section class="stats-overview" aria-label="Feature flag overview statistics">
+          
+          <!-- Stat 1: Total Features -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-blue">
+              <i data-lucide="layers"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">Total Features</span>
+              <div class="stat-number-wrapper">
+                <span class="stat-value" id="statTotalFeatures">5</span>
+                <span class="stat-subtext">Configured flags</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat 2: Enabled Features -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-green">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">Enabled Features</span>
+              <div class="stat-number-wrapper">
+                <span class="stat-value text-green" id="statEnabledFeatures">3</span>
+                <span class="stat-pill-badge badge-green" id="statEnabledPercent">60%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat 3: Disabled Features -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-amber">
+              <i data-lucide="pause-circle"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">Disabled Features</span>
+              <div class="stat-number-wrapper">
+                <span class="stat-value text-amber" id="statDisabledFeatures">2</span>
+                <span class="stat-pill-badge badge-amber" id="statDisabledPercent">40%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stat 4: Last Updated -->
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-indigo">
+              <i data-lucide="clock"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">Last Updated</span>
+              <div class="stat-number-wrapper">
+                <span class="stat-value stat-value-time" id="statLastUpdated">Just now</span>
+                <span class="stat-subtext" id="statLastUpdatedRelative">Session active</span>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Dashboard Workspace Grid (Flags Control Panel + Live Preview) -->
+        <div class="workspace-grid">
+          
+          <!-- Column 1: Feature Flags Management Panel -->
+          <section class="panel-section flags-section" id="featureFlagsPanel" aria-labelledby="flagsPanelTitle">
+            
+            <!-- Panel Header & Controls Toolbar -->
+            <div class="panel-header">
+              <div class="panel-title-area">
+                <div class="title-with-badge">
+                  <h2 id="flagsPanelTitle" class="panel-title">Feature Flags</h2>
+                  <span class="badge-count" id="activeCountBadge">3 / 5 Active</span>
+                </div>
+                <p class="panel-desc">Toggle features instantly. Changes are broadcast to the live preview and saved to localStorage.</p>
+              </div>
+
+              <!-- Reset to Defaults Button -->
+              <div class="panel-actions">
+                <button id="resetDefaultsBtn" class="btn btn-secondary" title="Restore all flags to factory default values">
+                  <i data-lucide="rotate-ccw"></i>
+                  <span>Reset to Defaults</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Toolbar: Search & Filter Chips -->
+            <div class="flags-toolbar">
+              
+              <!-- Search Bar -->
+              <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input 
+                  type="text" 
+                  id="searchFlagsInput" 
+                  class="search-input" 
+                  placeholder="Search flags by name, ID or description..." 
+                  aria-label="Search feature flags"
+                  autocomplete="off"
+                >
+                <button id="clearSearchBtn" class="clear-search-btn" aria-label="Clear search input" style="display: none;">
+                  <i data-lucide="x"></i>
+                </button>
+              </div>
+
+              <!-- Filter Buttons -->
+              <div class="filter-group" role="tablist" aria-label="Filter feature flags">
+                <button class="filter-chip active" data-filter="all" role="tab" aria-selected="true">
+                  <span>All</span>
+                  <span class="chip-count" id="chipCountAll">5</span>
+                </button>
+                <button class="filter-chip" data-filter="enabled" role="tab" aria-selected="false">
+                  <span>Enabled</span>
+                  <span class="chip-count" id="chipCountEnabled">3</span>
+                </button>
+                <button class="filter-chip" data-filter="disabled" role="tab" aria-selected="false">
+                  <span>Disabled</span>
+                  <span class="chip-count" id="chipCountDisabled">2</span>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Feature Flags List Container -->
+            <div class="flags-list" id="flagsContainer" role="region" aria-live="polite">
+              <!-- Feature cards will be dynamically rendered or hydrated by js/script.js -->
+            </div>
+
+            <!-- Empty Search State -->
+            <div class="empty-state" id="emptySearchState" style="display: none;">
+              <div class="empty-icon-wrap">
+                <i data-lucide="search-x"></i>
+              </div>
+              <h3 class="empty-title">No matching feature flags found</h3>
+              <p class="empty-text">We couldn't find any flags matching your search criteria. Try a different term or clear the filter.</p>
+              <button id="resetSearchFilterBtn" class="btn btn-secondary btn-sm">Clear Search & Filters</button>
+            </div>
+
+          </section>
+
+          <!-- Column 2: Website Live Preview Panel -->
+          <section class="panel-section preview-section" id="websitePreviewPanel" aria-labelledby="previewPanelTitle">
+            
+            <div class="panel-header">
+              <div class="panel-title-area">
+                <div class="title-with-badge">
+                  <h2 id="previewPanelTitle" class="panel-title">Website Live Preview</h2>
+                  <span class="badge-live-sync">
+                    <span class="live-dot-pulse"></span>
+                    <span>Real-Time Sync</span>
+                  </span>
+                </div>
+                <p class="panel-desc">Interactive e-commerce storefront. Reflects flag toggles instantly without browser reload.</p>
+              </div>
+
+              <!-- Device Viewport Toggle (Desktop / Mobile Preview) -->
+              <div class="viewport-controls" aria-label="Preview viewport modes">
+                <button id="viewportDesktopBtn" class="viewport-btn active" title="Desktop view">
+                  <i data-lucide="monitor"></i>
+                  <span>Desktop</span>
+                </button>
+                <button id="viewportMobileBtn" class="viewport-btn" title="Mobile view">
+                  <i data-lucide="smartphone"></i>
+                  <span>Mobile</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Browser Mock Frame -->
+            <div class="browser-frame" id="browserFrame">
+              
+              <!-- Mock Browser Chrome / URL Bar -->
+              <div class="browser-bar">
+                <div class="browser-dots">
+                  <span class="browser-dot dot-red"></span>
+                  <span class="browser-dot dot-yellow"></span>
+                  <span class="browser-dot dot-green"></span>
+                </div>
+                <div class="browser-url-bar">
+                  <i data-lucide="lock" class="url-lock-icon"></i>
+                  <span class="url-text">https://preview.novastore.io/home</span>
+                  <span class="url-tag">Live Sandbox</span>
+                </div>
+                <div class="browser-actions">
+                  <button id="refreshPreviewBtn" class="browser-action-btn" title="Simulate client re-render">
+                    <i data-lucide="rotate-cw"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Simulated E-Commerce Website Sandbox -->
+              <div class="store-sandbox" id="storeSandbox">
+                
+                <!-- 1. Promotional Banner (Controlled by: promotionalBanner) -->
+                <div class="store-promo-banner" id="previewPromoBanner">
+                  <div class="promo-content">
+                    <span class="promo-badge">HOT DEAL</span>
+                    <span class="promo-text">🎉 <strong>Black Friday Early Access:</strong> Get 40% OFF with code <code>NOVAPRO</code> + Free Worldwide Shipping!</span>
+                  </div>
+                  <button class="promo-cta-btn" type="button" aria-label="Claim promotion">Claim Offer</button>
+                </div>
+
+                <!-- Store Navigation Bar -->
+                <header class="store-nav-header">
+                  <div class="store-brand">
+                    <div class="store-logo-mark">
+                      <i data-lucide="zap"></i>
+                    </div>
+                    <span class="store-logo-name">NovaStore</span>
+                  </div>
+                  
+                  <nav class="store-links">
+                    <span class="store-link active">Home</span>
+                    <span class="store-link">Catalog</span>
+                    <span class="store-link">Deals</span>
+                    <span class="store-link">Support</span>
+                  </nav>
+
+                  <div class="store-nav-actions">
+                    <button class="store-icon-btn" aria-label="Search store">
+                      <i data-lucide="search"></i>
+                    </button>
+                    <button class="store-icon-btn cart-btn" aria-label="View shopping cart">
+                      <i data-lucide="shopping-bag"></i>
+                      <span class="cart-count">2</span>
+                    </button>
+                  </div>
+                </header>
+
+                <!-- Store Welcome Hero Section (Always visible) -->
+                <section class="store-hero">
+                  <div class="hero-badge-tag">
+                    <i data-lucide="sparkles"></i>
+                    <span>Next-Gen Audio Experience</span>
+                  </div>
+                  <h3 class="hero-heading">Engineered for Pure Sound. Crafted for Comfort.</h3>
+                  <p class="hero-subheading">Discover high-resolution wireless acoustics, adaptive noise cancellation, and seamless smart connectivity.</p>
+                  <div class="hero-btn-row">
+                    <button class="store-btn store-btn-primary" type="button">Explore Collection</button>
+                    <button class="store-btn store-btn-outline" type="button">Watch Tech Video</button>
+                  </div>
+                </section>
+
+                <!-- 2. Special Offers Section (Controlled by: specialOffers) -->
+                <section class="store-special-offers" id="previewSpecialOffers">
+                  <div class="special-offers-card">
+                    <div class="offers-badge-row">
+                      <span class="offer-flash-tag">
+                        <i data-lucide="flame"></i>
+                        <span>LIMITED FLASH SALE</span>
+                      </span>
+                      <div class="offers-countdown" title="Sale countdown timer">
+                        <i data-lucide="timer"></i>
+                        <span>Ending in <strong>04h : 18m : 32s</strong></span>
+                      </div>
+                    </div>
+                    <div class="offers-content-box">
+                      <div class="offers-text">
+                        <h4 class="offers-title">Bundle & Save $120 on Audio Pro Ecosystem</h4>
+                        <p class="offers-desc">Purchase any Nova Headphone and receive the Wireless Fast Charging Dock + Travel Case completely free.</p>
+                      </div>
+                      <button class="store-btn store-btn-deal" type="button">Claim Special Bundle</button>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- 3. New Products Section (Controlled by: newProducts) -->
+                <section class="store-products-section" id="previewNewProducts">
+                  <div class="section-heading-row">
+                    <div>
+                      <h4 class="store-section-title">New Arrivals</h4>
+                      <p class="store-section-desc">Freshly launched premium gear for music lovers and creators.</p>
+                    </div>
+                    <span class="view-all-link">View All (12) &rarr;</span>
+                  </div>
+
+                  <div class="products-grid">
+                    
+                    <!-- Product 1 -->
+                    <div class="product-card">
+                      <div class="product-badge">NEW</div>
+                      <div class="product-image-box">
+                        <i data-lucide="headphones" class="product-preview-icon"></i>
+                      </div>
+                      <div class="product-info">
+                        <div class="product-category">Wireless Audio</div>
+                        <h5 class="product-title">Nova Acoustic Pro ANC</h5>
+                        <div class="product-rating">
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <span class="rating-val">4.9</span>
+                        </div>
+                        <div class="product-bottom-row">
+                          <div class="product-price">
+                            <span class="current-price">$249.00</span>
+                            <span class="original-price">$299.00</span>
+                          </div>
+                          <button class="add-to-cart-btn" aria-label="Add Nova Acoustic Pro to cart">
+                            <i data-lucide="plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Product 2 -->
+                    <div class="product-card">
+                      <div class="product-badge">POPULAR</div>
+                      <div class="product-image-box">
+                        <i data-lucide="radio" class="product-preview-icon"></i>
+                      </div>
+                      <div class="product-info">
+                        <div class="product-category">Portable Series</div>
+                        <h5 class="product-title">Nova Pulse 360 Speaker</h5>
+                        <div class="product-rating">
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star-half" class="star-filled"></i>
+                          <span class="rating-val">4.7</span>
+                        </div>
+                        <div class="product-bottom-row">
+                          <div class="product-price">
+                            <span class="current-price">$129.00</span>
+                          </div>
+                          <button class="add-to-cart-btn" aria-label="Add Nova Pulse 360 to cart">
+                            <i data-lucide="plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Product 3 -->
+                    <div class="product-card">
+                      <div class="product-badge">NEW</div>
+                      <div class="product-image-box">
+                        <i data-lucide="watch" class="product-preview-icon"></i>
+                      </div>
+                      <div class="product-info">
+                        <div class="product-category">Smart Wearables</div>
+                        <h5 class="product-title">Nova Tempo Watch V3</h5>
+                        <div class="product-rating">
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <i data-lucide="star" class="star-filled"></i>
+                          <span class="rating-val">4.8</span>
+                        </div>
+                        <div class="product-bottom-row">
+                          <div class="product-price">
+                            <span class="current-price">$189.00</span>
+                            <span class="original-price">$219.00</span>
+                          </div>
+                          <button class="add-to-cart-btn" aria-label="Add Nova Tempo Watch to cart">
+                            <i data-lucide="plus"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </section>
+
+                <!-- Store Footer Note -->
+                <footer class="store-footer-mini">
+                  <span>© 2026 NovaStore Global Inc. All rights reserved.</span>
+                  <div class="footer-mini-links">
+                    <span>Privacy Policy</span>
+                    <span>•</span>
+                    <span>Terms of Service</span>
+                  </div>
+                </footer>
+
+                <!-- 4. Live Chat Widget (Controlled by: liveChat) -->
+                <div class="store-live-chat" id="previewLiveChat">
+                  
+                  <!-- Floating Chat Popup Window (Initially collapsed or expandable) -->
+                  <div class="chat-popup-window" id="chatPopupWindow">
+                    <div class="chat-popup-header">
+                      <div class="chat-agent-info">
+                        <div class="agent-avatar">
+                          <span>CS</span>
+                          <span class="agent-online-dot"></span>
+                        </div>
+                        <div>
+                          <div class="agent-name">Sarah (Customer Support)</div>
+                          <div class="agent-status">Online • Typically replies instantly</div>
+                        </div>
+                      </div>
+                      <button id="closeChatPopupBtn" class="chat-close-btn" aria-label="Close chat window">
+                        <i data-lucide="x"></i>
+                      </button>
+                    </div>
+
+                    <div class="chat-messages-body">
+                      <div class="chat-message message-received">
+                        <p>Hi there! 👋 Welcome to NovaStore. Can I help you find the right audio gear today?</p>
+                        <span class="chat-time">Just now</span>
+                      </div>
+                    </div>
+
+                    <div class="chat-input-bar">
+                      <input type="text" placeholder="Type a message..." readonly value="Ask us about our Black Friday deals!">
+                      <button class="chat-send-btn" aria-label="Send message">
+                        <i data-lucide="send"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Floating Trigger Button -->
+                  <button id="chatToggleTrigger" class="chat-fab-button" aria-label="Open customer support chat">
+                    <i data-lucide="message-square" class="chat-icon"></i>
+                    <span class="chat-unread-badge">1</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Preview Live Status Legend -->
+            <div class="preview-status-legend">
+              <span class="legend-title">Preview Flag States:</span>
+              <div class="legend-items" id="previewLegendItems">
+                <!-- Dynamically populated tags with on/off status -->
+              </div>
+            </div>
+
+          </section>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog (Native HTML5 <dialog> modal) -->
+  <dialog id="resetConfirmModal" class="modal-dialog" aria-labelledby="resetDialogTitle" closedby="any">
+    <div class="modal-content">
+      <div class="modal-icon-header modal-icon-warning">
+        <i data-lucide="alert-triangle"></i>
+      </div>
+      <div class="modal-text">
+        <h3 id="resetDialogTitle" class="modal-title">Reset to Default Settings?</h3>
+        <p class="modal-desc">
+          Are you sure you want to reset all 5 feature flags to their default predefined states? 
+          This will override any custom toggles currently stored in your browser's <code>localStorage</code>.
+        </p>
+        <div class="reset-preview-box">
+          <div class="reset-item"><span>Promotional Banner</span><strong class="text-green">ON</strong></div>
+          <div class="reset-item"><span>Dark Mode</span><strong class="text-amber">OFF</strong></div>
+          <div class="reset-item"><span>Live Chat</span><strong class="text-green">ON</strong></div>
+          <div class="reset-item"><span>New Products</span><strong class="text-green">ON</strong></div>
+          <div class="reset-item"><span>Special Offers</span><strong class="text-amber">OFF</strong></div>
+        </div>
+      </div>
+      <form method="dialog" class="modal-actions">
+        <button type="button" id="cancelResetBtn" class="btn btn-secondary" value="cancel" autofocus>Cancel</button>
+        <button type="button" id="confirmResetBtn" class="btn btn-danger" value="confirm">
+          <i data-lucide="rotate-ccw"></i>
+          <span>Yes, Reset to Defaults</span>
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Settings Modal (Native HTML5 <dialog> modal) -->
+  <dialog id="settingsModal" class="modal-dialog modal-dialog-lg" aria-labelledby="settingsModalTitle" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header-row">
+        <div class="modal-title-with-icon">
+          <div class="modal-icon-header modal-icon-blue">
+            <i data-lucide="settings"></i>
+          </div>
+          <div>
+            <h3 id="settingsModalTitle" class="modal-title">System & Storage Settings</h3>
+            <p class="modal-desc">Inspect active localStorage records and configuration parameters.</p>
+          </div>
+        </div>
+        <form method="dialog">
+          <button class="modal-close-icon-btn" value="close" aria-label="Close settings">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="settings-body">
+        <div class="settings-group">
+          <h4 class="settings-group-title">Storage Information</h4>
+          <div class="settings-info-grid">
+            <div class="info-card">
+              <span class="info-label">Storage Engine</span>
+              <span class="info-value">Window.localStorage</span>
+            </div>
+            <div class="info-card">
+              <span class="info-label">Primary Key</span>
+              <span class="info-value"><code>featureFlags</code></span>
+            </div>
+            <div class="info-card">
+              <span class="info-label">State Status</span>
+              <span class="info-value text-green">Persistent & Validated</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="group-title-row">
+            <h4 class="settings-group-title">Current Raw State (JSON)</h4>
+            <button id="copyJsonBtn" class="btn btn-xs btn-secondary">
+              <i data-lucide="copy"></i>
+              <span>Copy JSON</span>
+            </button>
+          </div>
+          <pre class="json-viewer" id="rawJsonViewer"><code>{}</code></pre>
+        </div>
+      </div>
+
+      <form method="dialog" class="modal-actions">
+        <button type="submit" class="btn btn-primary" value="close">Close Settings</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- About Project Modal (Native HTML5 <dialog> modal) -->
+  <dialog id="aboutModal" class="modal-dialog modal-dialog-lg" aria-labelledby="aboutModalTitle" closedby="any">
+    <div class="modal-content">
+      <div class="modal-header-row">
+        <div class="modal-title-with-icon">
+          <div class="modal-icon-header modal-icon-indigo">
+            <i data-lucide="info"></i>
+          </div>
+          <div>
+            <h3 id="aboutModalTitle" class="modal-title">About FeatureControl</h3>
+            <p class="modal-desc">Architecture overview and implementation details.</p>
+          </div>
+        </div>
+        <form method="dialog">
+          <button class="modal-close-icon-btn" value="close" aria-label="Close modal">
+            <i data-lucide="x"></i>
+          </button>
+        </form>
+      </div>
+
+      <div class="about-body">
+        <div class="about-section">
+          <h4>Project Overview</h4>
+          <p>
+            FeatureControl is a production-grade, client-side Feature Flagging Dashboard designed to simulate modern enterprise SaaS platforms such as LaunchDarkly and Vercel. It allows administrators to toggle client experiences in real time without triggering page refreshes or deployment cycles.
+          </p>
+        </div>
+
+        <div class="about-tech-stack">
+          <h4>Technology Stack</h4>
+          <div class="tech-tags">
+            <span class="tech-tag"><i data-lucide="code-2"></i> HTML5 Semantic Architecture</span>
+            <span class="tech-tag"><i data-lucide="palette"></i> Modern CSS3 Custom Properties</span>
+            <span class="tech-tag"><i data-lucide="cpu"></i> Vanilla JavaScript (ES6+ State Engine)</span>
+            <span class="tech-tag"><i data-lucide="database"></i> Browser LocalStorage API</span>
+            <span class="tech-tag"><i data-lucide="feather"></i> Lucide Vector Icons</span>
+          </div>
+        </div>
+
+        <div class="about-features-list">
+          <h4>Key Technical Highlights</h4>
+          <ul>
+            <li><strong>Single Source of Truth:</strong> Reactive state updates synchronize UI statistics, cards, and preview widgets.</li>
+            <li><strong>Zero Server Dependencies:</strong> Runs entirely client-side using localStorage persistence.</li>
+            <li><strong>Live Isolated Dark Mode:</strong> Toggles dark mode specifically within the customer preview sandbox without interfering with admin dashboard ergonomics.</li>
+            <li><strong>Native Top-Layer Modals:</strong> Uses accessible <code>&lt;dialog&gt;</code> elements with keyboard containment and light dismiss.</li>
+          </ul>
+        </div>
+      </div>
+
+      <form method="dialog" class="modal-actions">
+        <button type="submit" class="btn btn-primary" value="close">Done</button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Toast Notifications Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Application Logic -->
+  <script src="js/script.js"></script>
+</body>
+</html>
